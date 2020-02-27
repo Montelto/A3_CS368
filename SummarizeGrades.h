@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <iomanip>
 
 using namespace std;
 
@@ -17,16 +18,15 @@ struct Name {
     string last_name;
 };
 
-void readGradeFIle(const  string  inputFilepath,  int  *numberOfStudents, int
-*numberOfAssignments, map<int, Name> &studentNames, map<int, vector<int>>
-&studentScores);
+void readGradeFile(const  string,int* ,int* , map<int, Name>&, map<int,
+        vector<int>>&);
 
-void formatCaseOfNames(map<int, Name> &names);
+void formatCaseOfNames(map<int, Name>&);
 
-void computeTotalAndPercent(map<int,  vector<int>> &scores,map<int,  int>
-        &total,  map<int,  float> &percent);
+void computeTotalAndPercent(map<int, vector<int>>&,map<int, int>&, map<int,
+        float>&);
 
-void writeFormattedGrades(const string outputFilepath,map<int, Name> &names,
-        map<int, int> &total,map<int, float> &percent);
+void writeFormattedGrades(const string, map<int, Name>&, map<int, int>&,
+        map<int, float>&);
 
 #endif //SUMMARIZEGRADES_H

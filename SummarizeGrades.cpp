@@ -3,25 +3,30 @@
 void readGradeFile(const string inputFilepath, int *numberOfStudents, int
 *numberOfAssignments, map<int, Name> &studentNames, map<int, vector<int>>
 &studentScores) {
-    ifstream fileReader (inputFilepath);
+    ifstream fileReader;
+    fileReader.open(inputFilepath);
     string currentWord = "";
+
     fileReader >> currentWord;
     if (currentWord == "number_of_students") {
         fileReader >> *numberOfStudents;
     }
+
     fileReader >> currentWord;
     if (currentWord == "number_of_assignments") {
         fileReader >> *numberOfAssignments;
     }
-    int studentNumber;
+
+    for (int i = 0; i < *numberOfAssignments + 3; ++i) {
+        fileReader >> currentWord;
+    }
+
+    int studentNumber = 00000;
     Name name;
     vector<int> scores;
-    int score;
+    int score = 0;
     for (int i = 0; i <= *numberOfStudents; ++i) {
-        studentNumber = 00000;
-        if (i != 0) {
-            fileReader >> studentNumber;
-        }
+        fileReader >> studentNumber;
         fileReader >> name.first_name;
         fileReader >> name.last_name;
         for (int j = 0; j < *numberOfAssignments; ++j) {
@@ -30,37 +35,78 @@ void readGradeFile(const string inputFilepath, int *numberOfStudents, int
         }
         studentNames.insert(pair<int, Name>(studentNumber, name));
         studentScores.insert(pair<int, vector<int>>(studentNumber, scores));
+        scores.clear();
     }
+
+    fileReader.close();
 }
 
 void formatCaseOfNames(map<int, Name> &names) {
-    for (auto itr : names) {
-        string name = itr.second.first_name;
+    for (auto itr = names.begin(); itr != names.end(); ++itr) {
+
+        string name = itr->second.first_name;
         int nameLength = name.length();
         for (int i = 0; i < nameLength; ++i) {
-            if (i == 0 and (name[i]>='a' && name[i]<='z'))
+            if (i == 0 && (name[i]>='a' && name[i]<='z')) {
                 name[i] = name[i] - 32;
-            else if(name[i]>='A' && name[i]<='Z')
+            } else if(i != 0 && (name[i]>='A' && name[i]<='Z'))
                 name[i] = name[i] + 32;
         }
+        itr->second.first_name = name;
 
-        name = itr.second.last_name;
+        name = itr->second.last_name;
         nameLength = name.length();
         for (int i = 0; i < nameLength; ++i) {
             if (i == 0 and (name[i]>='a' && name[i]<='z'))
                 name[i] = name[i] - 32;
-            else if(name[i]>='A' && name[i]<='Z')
+            else if(i != 0 && (name[i]>='A' && name[i]<='Z'))
                 name[i] = name[i] + 32;
         }
+        itr->second.last_name = name;
     }
 }
 
 void computeTotalAndPercent(map<int, vector<int>> &scores,map<int, int>
         &total,  map<int, float> &percent) {
+    for (auto studentItr : scores) {
+        int score = 0;
+        for (auto scoreItr : studentItr.second) {
+            score += scoreItr;
+        }
 
+        int totalScore = score;
+        int maxScore = studentItr.second.size() * 10;
+        float scorePercent = totalScore*1000 / maxScore;
+        int studentID = studentItr.first;
+        total.insert(pair<int, int>(studentID, totalScore));
+        percent.insert(pair<int, float>(studentID, scorePercent/10));
+    }
 }
 
 void writeFormattedGrades(const string outputFilepath,map<int, Name> &names,
         map<int, int> &total,map<int, float> &percent) {
+    ofstream fileWriter (outputFilepath);
 
+    for (auto nameItr : names) {
+        int studentID = nameItr.first;
+        string name = nameItr.second.last_name + ", " + nameItr.second
+                .first_name;
+        fileWriter << setw(0) << name;
+
+        for (auto totalItr : total) {
+            if (totalItr.first == studentID) {
+                int space = 22 - name.length();
+                fileWriter << setw(space) << totalItr.second;
+            }
+        }
+
+        for (auto percentItr : percent) {
+            if (percentItr.first == studentID) {
+                fileWriter << setw(7) << fixed << setprecision(1)
+                << percentItr.second << endl;
+            }
+        }
+    }
+
+    fileWriter.close();
 }
