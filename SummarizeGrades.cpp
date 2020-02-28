@@ -1,3 +1,12 @@
+//
+// Joseph McFarland
+// 9072511679
+// mcfarland3@wis.edu
+// https://canvas.wisc.edu/courses/188843/files for slides
+// https://www.geeksforgeeks.org for understanding (mostly for setprecision)
+// Made in CLion with commits to GitHub
+//
+
 #include "SummarizeGrades.h"
 
 void readGradeFile(const string inputFilepath, int *numberOfStudents, int
@@ -27,8 +36,8 @@ void readGradeFile(const string inputFilepath, int *numberOfStudents, int
     int score = 0;
     for (int i = 0; i <= *numberOfStudents; ++i) {
         fileReader >> studentNumber;
-        fileReader >> name.first_name;
-        fileReader >> name.last_name;
+        fileReader >> name.firstName;
+        fileReader >> name.lastName;
         for (int j = 0; j < *numberOfAssignments; ++j) {
             fileReader >> score;
             scores.push_back(score);
@@ -44,7 +53,7 @@ void readGradeFile(const string inputFilepath, int *numberOfStudents, int
 void formatCaseOfNames(map<int, Name> &names) {
     for (auto itr = names.begin(); itr != names.end(); ++itr) {
 
-        string name = itr->second.first_name;
+        string name = itr->second.firstName;
         int nameLength = name.length();
         for (int i = 0; i < nameLength; ++i) {
             if (i == 0 && (name[i]>='a' && name[i]<='z')) {
@@ -52,9 +61,9 @@ void formatCaseOfNames(map<int, Name> &names) {
             } else if(i != 0 && (name[i]>='A' && name[i]<='Z'))
                 name[i] = name[i] + 32;
         }
-        itr->second.first_name = name;
+        itr->second.firstName = name;
 
-        name = itr->second.last_name;
+        name = itr->second.lastName;
         nameLength = name.length();
         for (int i = 0; i < nameLength; ++i) {
             if (i == 0 and (name[i]>='a' && name[i]<='z'))
@@ -62,7 +71,7 @@ void formatCaseOfNames(map<int, Name> &names) {
             else if(i != 0 && (name[i]>='A' && name[i]<='Z'))
                 name[i] = name[i] + 32;
         }
-        itr->second.last_name = name;
+        itr->second.lastName = name;
     }
 }
 
@@ -74,12 +83,14 @@ void computeTotalAndPercent(map<int, vector<int>> &scores,map<int, int>
             score += scoreItr;
         }
 
-        int totalScore = score;
-        int maxScore = studentItr.second.size() * 10;
-        float scorePercent = totalScore*1000 / maxScore;
+        float totalScore = score;
+        float maxScore = studentItr.second.size() * 10;
+        float scorePercent = totalScore*100 / maxScore;
+        if (scorePercent > 100)
+            scorePercent = 100;
         int studentID = studentItr.first;
         total.insert(pair<int, int>(studentID, totalScore));
-        percent.insert(pair<int, float>(studentID, scorePercent/10));
+        percent.insert(pair<int, float>(studentID, scorePercent));
     }
 }
 
@@ -89,8 +100,8 @@ void writeFormattedGrades(const string outputFilepath,map<int, Name> &names,
 
     for (auto nameItr : names) {
         int studentID = nameItr.first;
-        string name = nameItr.second.last_name + ", " + nameItr.second
-                .first_name;
+        string name = nameItr.second.lastName + ", " + nameItr.second
+                .firstName;
         fileWriter << setw(0) << name;
 
         for (auto totalItr : total) {
